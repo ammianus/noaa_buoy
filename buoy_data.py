@@ -4,6 +4,28 @@ import sys
 
 DEFAULT_BUOY = 44011
 
+#calculate the current air temp at the station and it's relation to the max temp
+def airTempStatus():
+    airTemp = buoydata.at[0,'ATMP']
+    date = '{}-{}-{} {}:{} UTC'.format(buoydata.at[0,'#YY'],buoydata.at[0,'MM'],buoydata.at[0,'DD'],buoydata.at[0,'hh'],buoydata.at[0,'mm'])
+    print('{} Air Temp {}'.format(date,airTemp))
+    calcs = buoydata.agg({'ATMP' : ['median','min','max']})#, 'WTMP' : ['median','min', 'max'], 'WSPD' : ['median','min', 'max']})
+    print(calcs)
+    maxTemp = calcs.at['max','ATMP']
+
+    maxTempRelativeDesc = ''    
+    if airTemp == maxTemp:
+        maxTempRelativeDesc = 'equal to'
+        pass
+    elif airTemp < maxTemp:
+        maxTempRelativeDesc = 'lower than'
+        pass
+
+    text = 'The latest air temperature at Station {} is {}°C is {} the maximum temperature for the past 45 days of {}°C.'.format(buoyId, airTemp,maxTempRelativeDesc,maxTemp)
+    print(text)
+    return text
+
+
 #print('This is the name of the script: ', sys.argv[0])
 print('Number of arguments: ', len(sys.argv))
 print('The arguments are: ' , str(sys.argv))
@@ -27,22 +49,8 @@ print('done')
 #print(buoydata.dtypes)
 print(buoydata.head(1))
 #print(buoydata.describe())
-airTemp = buoydata.at[0,'ATMP']
-date = '{}-{}-{} {}:{} UTC'.format(buoydata.at[0,'#YY'],buoydata.at[0,'MM'],buoydata.at[0,'DD'],buoydata.at[0,'hh'],buoydata.at[0,'mm'])
-print('{} Air Temp {}'.format(date,airTemp))
-calcs = buoydata.agg({'ATMP' : ['median','min','max']})#, 'WTMP' : ['median','min', 'max'], 'WSPD' : ['median','min', 'max']})
-print(calcs)
 
-maxTemp = calcs.at['max','ATMP']
+airTempStatus()
 
-maxTempRelativeDesc = ''    
-if airTemp == maxTemp:
-    maxTempRelativeDesc = 'equal to'
-    pass
-elif airTemp < maxTemp:
-    maxTempRelativeDesc = 'lower than'
-    pass
 
-text = 'The latest air temperature at Station {} is {}°C is {} the maximum temperature for the past 45 days of {}°C.'.format(buoyId, airTemp,maxTempRelativeDesc,maxTemp)
-print(text)
 
