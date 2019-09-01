@@ -21,7 +21,7 @@ def airTempStatus(buoydata):
         maxTempRelativeDesc = 'lower than'
         pass
 
-    text = 'The latest air temperature at Station {} is {}°C is {} the maximum temperature for the past 45 days of {}°C.'.format(buoyId, airTemp,maxTempRelativeDesc,maxTemp)
+    text = 'The latest air temperature at Station {} is {}°C and is {} the maximum temperature for the past 45 days of {}°C.'.format(buoyId, airTemp,maxTempRelativeDesc,maxTemp)
     print(text)
     return text
 
@@ -39,6 +39,12 @@ def fetchRealTime2Data(theBuoyId):
     print(buoydata.head(1))
     #print(buoydata.describe())
     return buoydata
+
+def buoyLat():
+    return 41.070000
+
+def buoyLong():
+    return -66.588000
 
 #print('This is the name of the script: ', sys.argv[0])
 print('Number of arguments: ', len(sys.argv))
