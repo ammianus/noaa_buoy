@@ -5,7 +5,7 @@ import sys
 DEFAULT_BUOY = 44011
 
 #calculate the current air temp at the station and it's relation to the max temp
-def airTempStatus():
+def airTempStatus(buoydata):
     airTemp = buoydata.at[0,'ATMP']
     date = '{}-{}-{} {}:{} UTC'.format(buoydata.at[0,'#YY'],buoydata.at[0,'MM'],buoydata.at[0,'DD'],buoydata.at[0,'hh'],buoydata.at[0,'mm'])
     print('{} Air Temp {}'.format(date,airTemp))
@@ -25,6 +25,20 @@ def airTempStatus():
     print(text)
     return text
 
+def fetchRealTime2Data(theBuoyId):
+    #realtime data for station 44011
+    url = 'https://www.ndbc.noaa.gov/data/realtime2/{}.txt'.format(theBuoyId)
+
+    print('reading data from: '+url)
+    buoydata = pd.read_table(url,delim_whitespace=True,header=[0], skiprows=[1], na_values=['MM'])
+    print('done')
+
+    #tests printing the raw data from the tabler
+    #print(buoydata.columns)
+    #print(buoydata.dtypes)
+    print(buoydata.head(1))
+    #print(buoydata.describe())
+    return buoydata
 
 #print('This is the name of the script: ', sys.argv[0])
 print('Number of arguments: ', len(sys.argv))
@@ -38,19 +52,10 @@ else:
     pass
 
 #realtime data for station 44011
-url = 'https://www.ndbc.noaa.gov/data/realtime2/{}.txt'.format(buoyId)
-
-print('reading data from: '+url)
-buoydata = pd.read_table(url,delim_whitespace=True,header=[0], skiprows=[1], na_values=['MM'])
-print('done')
-
-#tests printing the raw data from the tabler
-#print(buoydata.columns)
-#print(buoydata.dtypes)
-print(buoydata.head(1))
+buoydata = fetchRealTime2Data(buoyId)
 #print(buoydata.describe())
 
-airTempStatus()
+airTempStatus(buoydata)
 
 
 
