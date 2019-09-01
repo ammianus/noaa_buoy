@@ -58,10 +58,10 @@ else:
     pass
 
 #realtime data for station 44011
-buoydata = fetchRealTime2Data(buoyId)
+#buoydata = fetchRealTime2Data(buoyId)
 #print(buoydata.describe())
 
-airTempStatus(buoydata)
+#airTempStatus(buoydata)
 
 
 

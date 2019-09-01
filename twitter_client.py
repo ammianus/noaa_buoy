@@ -11,7 +11,6 @@ data = buoy_data.fetchRealTime2Data(44011)
 #get status for air temps
 newstatus = buoy_data.airTempStatus(data)
 
-
 #post tweet
 r = api.request('statuses/update', 
     {'status': newstatus, 
