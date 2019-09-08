@@ -4,6 +4,22 @@ import sys
 
 DEFAULT_BUOY = 44011
 
+def convertCToF(celsius: float) -> float:
+    farenheit = round(((celsius * 1.8) + 32.0),1)
+    return farenheit
+
+def convertMetricSpeedToImperial(metersPerSecond: float) -> float:
+    milesPerHour = round((metersPerSecond * 3600) * 0.000621371)
+    return milesPerHour 
+
+def friendlyFormatTemp(celsiusTemp: float) -> str:
+    farenheit = convertCToF(celsiusTemp)
+    return '{}°F ({}°C)'.format(farenheit, celsiusTemp)
+
+def friendlyFormatSpeed(metersPerSecond: float) -> str:
+    mph = convertMetricSpeedToImperial(metersPerSecond)
+    return '{} mph ({} m/s)'.format(mph, metersPerSecond)
+
 #calculate the current air temp at the station and it's relation to the max temp
 def airTempStatus(buoydata: pd.DataFrame) -> str:
     airTemp = buoydata.at[0,'ATMP']
@@ -65,6 +81,12 @@ def windSpeedStatus(buoydata: pd.DataFrame) -> str:
     print(text)
     return text
 
+def measurementStatus(buoydata: pd.DataFrame) -> str:
+    date = '{}-{}-{} {}:{} UTC'.format(buoydata.at[0,'#YY'],buoydata.at[0,'MM'],buoydata.at[0,'DD'],buoydata.at[0,'hh'],buoydata.at[0,'mm'])
+    text = 'Latest buoy measurements at Georges Bank:\n({})\nWDIR: {} \nWSPD: {} \nGST: {} \nWVHT: {} m\nPRES: {} hPa\nATMP: {}\nWTMP: {}'.format(date,buoydata.at[0,'WDIR'],friendlyFormatSpeed(buoydata.at[0,'WSPD']),friendlyFormatSpeed(buoydata.at[0,'GST']),buoydata.at[0,'WVHT'],buoydata.at[0,'PRES'],friendlyFormatTemp(buoydata.at[0,'ATMP']),friendlyFormatTemp(buoydata.at[0,'WTMP']))
+    print(text)
+    return text
+
 def fetchRealTime2Data(theBuoyId: int) -> pd.DataFrame:
     #realtime data for station 44011
     url = 'https://www.ndbc.noaa.gov/data/realtime2/{}.txt'.format(theBuoyId)
@@ -105,6 +127,6 @@ buoydata = fetchRealTime2Data(buoyId)
 #airTempStatus(buoydata)
 #waterTempStatus(buoydata)
 #windSpeedStatus(buoydata)
-
+measurementStatus(buoydata)
 
 

@@ -17,21 +17,42 @@ def postTweet(updateContent: dict) -> None:
     pp.pprint(r.json()) 
     pass
 
+#general post tweet
+def postMedia(imagePath: str,updateContent: dict) -> None:
+    # STEP 1 - upload image
+    file = open(imagePath, 'rb')
+    data = file.read()
+    r = api.request('media/upload', None, {'media': data})
+    print('UPLOAD MEDIA SUCCESS' if r.status_code == 200 else 'UPLOAD MEDIA FAILURE: ' + r.text)
+
+# STEP 2 - post tweet with a reference to uploaded image
+    if r.status_code == 200:
+        media_id = r.json()['media_id']
+        updateContent.update({'media_ids': media_id})
+        r = api.request('statuses/update', updateContent)
+        print('UPDATE STATUS SUCCESS' if r.status_code == 200 else 'UPDATE STATUS FAILURE: ' + r.text)
+
 #get status for air temps and post it
 def airTempTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.airTempStatus(data)
+    newstatus = buoy_data.airTempStatus(data)+' #Dorian'
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
 def waterTempTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.waterTempStatus(data)+' #HurricaneDorian'
+    newstatus = buoy_data.waterTempStatus(data)+' #Dorian'
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
 def windSpeedTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.windSpeedStatus(data)+' #HurricaneDorian'
+    newstatus = buoy_data.windSpeedStatus(data)+' #Dorian'
+    updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
+    postTweet(updateContent)
+    pass
+
+def latestMeasurementTweet(data: DataFrame) -> None:
+    newstatus = buoy_data.measurementStatus(data)+'\n #Dorian'
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
@@ -47,9 +68,26 @@ def postGeneralMessage(message: str) -> None:
     postTweet(updateContent)
     pass
 
+def postReply(message: str, inReplyTo: str) -> None:
+    updateContent = {'status': message, 'in_reply_to_status_id': inReplyTo, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
+    postTweet(updateContent)
+    pass
+
+def postBuoyCam(message: str) -> None:
+    updateContent = {'status': message, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
+    postMedia('buoycam/Z12A_2019_09_07_1510.jpg',updateContent)
+    pass
+
+#example of posting to twitter different data
+#TODO figure out how to make this a general purpose CLI
 #postGeneralMessage('NOAA Buoy 44011 is testing some new python functions tonight. Prepping for #HurricaneDorian later this week.')
-waterTempTweet(data)
-windSpeedTweet(data)
+#postReply('@NWSBoston https://twitter.com/AltBuoy44011/status/1170298502125146112?s=20', '1170285282928644096')
+#latestMeasurementTweet(data)
+#postBuoyCam('I am experiencing the effects of the storm. Definitely have waves here at Georges Bank. Good thing I don\'t get seasick 🤢\n\n Image Credit NOAA/NWS/NDBC\n@NOAA @NWSBoston @NHC_Atlantic #Dorian #HurricaneDorian' )
+#waterTempTweet(data)
+#windSpeedTweet(data)
+#airTempTweet(data)
+
 
 #geo/search not returning anything for oceanic Lat/Long locations?
 #r = api.request('geo/search', {'lat': buoy_data.buoyLat(), 
