@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy
 import sys
+import requests
+import shutil
+import hashlib
+import os
+import platform
 
 DEFAULT_BUOY = 44011
 
@@ -102,6 +107,56 @@ def fetchRealTime2Data(theBuoyId: int) -> pd.DataFrame:
     #print(buoydata.describe())
     return buoydata
 
+def hashFile(path: str) -> str:
+    BLOCKSIZE = 65536
+    hasher = hashlib.sha1()
+    with open(path, 'rb') as afile:
+        buf = afile.read(BLOCKSIZE)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = afile.read(BLOCKSIZE)
+    return hasher.hexdigest()
+
+def fetchBuoyCamImage(theBuoyId: int) -> str:
+    #backup current file if exists
+    
+    latestFilePath = 'buoycam/latest.jpg'
+    tempFilePath = 'buoycam/temp_latest.jpg'
+    latestFileExists = os.path.exists(latestFilePath)
+    previousHash = '' 
+    if latestFileExists == True:
+        print('image exists')
+        date = os.path.getmtime(latestFilePath)
+        print('mtime: '+str(date))
+        prevFilePath = 'buoycam/previous-{}.jpg'.format(date)
+        previousHash = hashFile(latestFilePath)
+        pass
+    else:
+        previousHash = '-1'
+        pass
+    
+    print('prev hash: '+previousHash)
+
+    #download latest file from noaa servers
+    image_url = 'https://www.ndbc.noaa.gov/buoycam.php?station={}'.format(theBuoyId)
+    img_data = requests.get(image_url).content
+    with open(tempFilePath, 'wb') as handler:
+        handler.write(img_data)
+
+    newHash = hashFile(tempFilePath)
+    print('new hash: '+newHash)
+
+    if previousHash != newHash:
+        print('new image found copying to '+latestFilePath)
+        if latestFileExists == True:
+            shutil.move(latestFilePath,prevFilePath)
+            pass
+        shutil.move(tempFilePath,latestFilePath)
+        return latestFilePath
+    else:
+        print('image unchanged')
+        return 'n/a'
+
 def buoyLat() -> float:
     return 41.070000
 
@@ -127,6 +182,7 @@ buoydata = fetchRealTime2Data(buoyId)
 #airTempStatus(buoydata)
 #waterTempStatus(buoydata)
 #windSpeedStatus(buoydata)
-measurementStatus(buoydata)
+#measurementStatus(buoydata)
 
-
+imagefile = fetchBuoyCamImage(buoyId)
+print(imagefile)

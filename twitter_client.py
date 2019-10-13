@@ -34,25 +34,25 @@ def postMedia(imagePath: str,updateContent: dict) -> None:
 
 #get status for air temps and post it
 def airTempTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.airTempStatus(data)+' #Dorian'
+    newstatus = buoy_data.airTempStatus(data)+''
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
 def waterTempTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.waterTempStatus(data)+' #Dorian'
+    newstatus = buoy_data.waterTempStatus(data)+''
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
 def windSpeedTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.windSpeedStatus(data)+' #Dorian'
+    newstatus = buoy_data.windSpeedStatus(data)+''
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
 def latestMeasurementTweet(data: DataFrame) -> None:
-    newstatus = buoy_data.measurementStatus(data)+'\n #Dorian'
+    newstatus = buoy_data.measurementStatus(data)+'\n'
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
@@ -75,18 +75,18 @@ def postReply(message: str, inReplyTo: str) -> None:
 
 def postBuoyCam(message: str) -> None:
     updateContent = {'status': message, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
-    postMedia('buoycam/Z12A_2019_09_07_1510.jpg',updateContent)
+    postMedia('buoycam/Z12A_2019_10_11_1910.jpg',updateContent)
     pass
 
 #example of posting to twitter different data
 #TODO figure out how to make this a general purpose CLI
 #postGeneralMessage('NOAA Buoy 44011 is testing some new python functions tonight. Prepping for #HurricaneDorian later this week.')
 #postReply('@NWSBoston https://twitter.com/AltBuoy44011/status/1170298502125146112?s=20', '1170285282928644096')
-#latestMeasurementTweet(data)
-#postBuoyCam('I am experiencing the effects of the storm. Definitely have waves here at Georges Bank. Good thing I don\'t get seasick 🤢\n\n Image Credit NOAA/NWS/NDBC\n@NOAA @NWSBoston @NHC_Atlantic #Dorian #HurricaneDorian' )
-#waterTempTweet(data)
+latestMeasurementTweet(data)
+postBuoyCam('Subtropical Storm Melissa churning the water at Station 44011 on Georges Bank as it moves off the U.S. East Coast. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA @NWSBoston @NHC_Atlantic' )
+waterTempTweet(data)
 #windSpeedTweet(data)
-#airTempTweet(data)
+airTempTweet(data)
 
 
 #geo/search not returning anything for oceanic Lat/Long locations?
