@@ -125,7 +125,7 @@ def fetchBuoyCamImage(theBuoyId: int) -> str:
     latestFileExists = os.path.exists(latestFilePath)
     previousHash = '' 
     if latestFileExists == True:
-        print('image exists')
+        print('old image exists in buoycam/ dir')
         date = os.path.getmtime(latestFilePath)
         print('mtime: '+str(date))
         prevFilePath = 'buoycam/previous-{}.jpg'.format(date)
@@ -184,5 +184,5 @@ buoydata = fetchRealTime2Data(buoyId)
 #windSpeedStatus(buoydata)
 #measurementStatus(buoydata)
 
-imagefile = fetchBuoyCamImage(buoyId)
-print(imagefile)
+#imagefile = fetchBuoyCamImage(buoyId)
+#print(imagefile)

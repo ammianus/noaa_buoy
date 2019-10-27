@@ -74,8 +74,14 @@ def postReply(message: str, inReplyTo: str) -> None:
     pass
 
 def postBuoyCam(message: str) -> None:
-    updateContent = {'status': message, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
-    postMedia('buoycam/Z12A_2019_10_11_1910.jpg',updateContent)
+    latestImage = buoy_data.fetchBuoyCamImage(44011)
+    if latestImage != 'n/a':
+        updateContent = {'status': message, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
+        postMedia('buoycam/latest.jpg',updateContent)
+        pass
+    else:
+        #do nothing
+        pass
     pass
 
 #example of posting to twitter different data
@@ -83,10 +89,10 @@ def postBuoyCam(message: str) -> None:
 #postGeneralMessage('NOAA Buoy 44011 is testing some new python functions tonight. Prepping for #HurricaneDorian later this week.')
 #postReply('@NWSBoston https://twitter.com/AltBuoy44011/status/1170298502125146112?s=20', '1170285282928644096')
 latestMeasurementTweet(data)
-postBuoyCam('Subtropical Storm Melissa churning the water at Station 44011 on Georges Bank as it moves off the U.S. East Coast. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA @NWSBoston @NHC_Atlantic' )
-waterTempTweet(data)
+postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
+#waterTempTweet(data)
 #windSpeedTweet(data)
-airTempTweet(data)
+#airTempTweet(data)
 
 
 #geo/search not returning anything for oceanic Lat/Long locations?
