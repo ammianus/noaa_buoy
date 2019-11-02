@@ -15,6 +15,7 @@ Requires Python 3 and pip installed.
 1. Clone repository
 2. `pip install pandas`
 3. `pip install TwitterAPI`
+4. `pip install clint`
 
 ## Running
 

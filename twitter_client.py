@@ -1,14 +1,10 @@
 from TwitterAPI import TwitterAPI
 from twitter_creds import *
 from pandas import DataFrame
+from clint import arguments
+from clint.textui import puts, colored, indent
 import buoy_data
 import pprint
-
-#init TwitterAPI with your own credentials
-api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
-
-#get new data for buoy 44011
-data = buoy_data.fetchRealTime2Data(44011)
 
 #general post tweet
 def postTweet(updateContent: dict) -> None:
@@ -84,12 +80,28 @@ def postBuoyCam(message: str) -> None:
         pass
     pass
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class InputError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
+
 #example of posting to twitter different data
 #TODO figure out how to make this a general purpose CLI
 #postGeneralMessage('NOAA Buoy 44011 is testing some new python functions tonight. Prepping for #HurricaneDorian later this week.')
 #postReply('@NWSBoston https://twitter.com/AltBuoy44011/status/1170298502125146112?s=20', '1170285282928644096')
-latestMeasurementTweet(data)
-postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
+#latestMeasurementTweet(data)
+#postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
 #waterTempTweet(data)
 #windSpeedTweet(data)
 #airTempTweet(data)
@@ -99,3 +111,116 @@ postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA
 #r = api.request('geo/search', {'lat': buoy_data.buoyLat(), 
 #    'long': buoy_data.buoyLong()
 #    },None,'GET')
+
+#
+# start CLI program
+#
+args = arguments.Args()
+
+with indent(4, quote='>>>'):
+    puts(colored.red('Aruments passed in: ') + str(args.all))
+    #puts(colored.red('Flags detected: ') + str(args.flags))
+    #puts(colored.red('Files detected: ') + str(args.files))
+    #puts(colored.red('NOT Files detected: ') + str(args.not_files))
+    puts(colored.red('Grouped Arguments: ') + str(dict(args.grouped)))
+
+commands = args.grouped.get('_')
+puts(colored.cyan('Commands: ')+str(commands))
+
+if commands != None and len(commands) > 0:
+    primaryCommand = commands[0]
+    secondaryCommand = commands[1]
+    #post buoycam - post buoycam image with message
+    if primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'buoycam'.casefold():
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        defaultMessage = '#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA'
+        if args.grouped.get('-m') != None:
+            message = args.grouped.get('-m')[0]
+            pass
+        else:
+            message = defaultMessage
+            pass
+
+        with indent(4, quote='>>>'):
+            puts(colored.blue('post buoycam'))
+            puts(colored.blue(message))
+        postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
+        pass
+    #post latest - latst buoy measurements
+    elif primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'latest'.casefold():
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        #get new data for buoy 44011
+        puts(colored.cyan('Fetch Data For: ')+str(44011))
+        data = buoy_data.fetchRealTime2Data(44011)
+        
+        puts(colored.blue('post latest'))
+        latestMeasurementTweet(data)
+        pass
+    #post tweet - general messages, no data from buoy 
+    elif primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'tweet'.casefold():
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        if args.grouped.get('-m') != None:
+            message = args.grouped.get('-m')[0]
+            pass
+        else:
+            puts(colored.red('Message argument (-m) is required'))
+            raise InputError
+
+        with indent(4, quote='>>>'):
+            puts(colored.blue('post tweet'))
+            puts(colored.blue(message))
+        postGeneralMessage(message)
+        pass 
+    #post reply - reply to another tweet 
+    elif primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'reply'.casefold():
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        if args.grouped.get('-m') != None:
+            message = args.grouped.get('-m')[0]
+            pass
+        else:
+            puts(colored.red('Message argument (-m) is required'))
+            raise InputError
+
+        if args.grouped.get('-r') != None:
+            inReplyTo = args.grouped.get('-r')[0]
+            pass
+        else:
+            puts(colored.red('Reply to argument (-r) is required'))
+            raise InputError
+
+        with indent(4, quote='>>>'):
+            puts(colored.blue('post reply'))
+            puts(colored.blue(message))
+            puts(colored.blue(inReplyTo))
+        
+        postReply(message, inReplyTo)
+        pass 
+    else:
+        puts(colored.red('Unknown command argument'))
+        raise InputError
+    pass
+else:
+    puts(colored.red('Must provide command arguments'))
+    raise InputError
+
+
+
+
+
+#TODO use tasks
+#latestMeasurementTweet(data)
+#postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
+
+puts(colored.cyan('Task Complete'))
