@@ -1,2 +1,5 @@
+*.code-workspace
+.vscode/*
 buoycam/*.png
 buoycam/*.jpg
+__pycache__
