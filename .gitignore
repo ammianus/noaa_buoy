@@ -1,5 +1,10 @@
 *.code-workspace
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 buoycam/*.png
 buoycam/*.jpg
 __pycache__
+plots

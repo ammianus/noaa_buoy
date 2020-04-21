@@ -44,7 +44,10 @@ def waterTempTweet(data: DataFrame) -> None:
 def windSpeedTweet(data: DataFrame) -> None:
     newstatus = buoy_data.windSpeedStatus(data)+''
     updateContent = {'status': newstatus, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
-    postTweet(updateContent)
+
+    latestImage = 'plots/windspeed.png'
+    postMedia(latestImage,updateContent)
+
     pass
 
 def latestMeasurementTweet(data: DataFrame) -> None:
@@ -78,6 +81,12 @@ def postBuoyCam(message: str) -> None:
     else:
         #do nothing
         pass
+    pass
+
+def retweet(tweetId) -> None:
+    r = api.request('statuses/retweet/:%s' % tweetId)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(r.json()) 
     pass
 
 class Error(Exception):
@@ -147,7 +156,7 @@ if commands != None and len(commands) > 0:
         with indent(4, quote='>>>'):
             puts(colored.blue('post buoycam'))
             puts(colored.blue(message))
-        postBuoyCam('#BuoyCam from Station 44011. \n\n Image Credit NOAA/NWS/NDBC\n@NOAA' )
+        postBuoyCam('#BuoyCam from Station 44011 Georges Bank, Atlantic Ocean. \n\nImage Credit NOAA/NWS/NDBC\n@NOAA' )
         pass
     #post latest - latst buoy measurements
     elif primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'latest'.casefold():
@@ -207,6 +216,33 @@ if commands != None and len(commands) > 0:
         
         postReply(message, inReplyTo)
         pass 
+    elif primaryCommand.casefold() == 'post'.casefold() and secondaryCommand.casefold() == 'windspeed'.casefold():
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        #get new data for buoy 44011
+        puts(colored.cyan('Fetch Data For: ')+str(44011))
+        data = buoy_data.fetchRealTime2Data(44011)
+
+        with indent(4, quote='>>>'):
+            puts(colored.blue('post windspeed'))
+            
+        windSpeedTweet(data)
+    elif primaryCommand.casefold() == 'retweet':
+        #init TwitterAPI with your own credentials
+        puts(colored.cyan('Access TwitterAPI'))
+        api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
+
+        if args.grouped.get('-id') != None:
+            tweetId = args.grouped.get('-id')[0]
+            puts(colored.blue('retweet id: '+tweetId+'.json'))
+            retweet(tweetId)
+            pass
+        else:
+            puts(colored.red('Retweet argument id (-id) is required'))
+            raise InputError   
+        pass
     else:
         puts(colored.red('Unknown command argument'))
         raise InputError
