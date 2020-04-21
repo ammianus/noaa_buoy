@@ -63,7 +63,7 @@ def postStationInfo() -> None:
     pass
 
 def postGeneralMessage(message: str) -> None:
-    updateContent = {'status': message, 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
+    updateContent = {'status': message.replace("\\n", "\n"), 'lat': buoy_data.buoyLat(), 'long': buoy_data.buoyLong(), }
     postTweet(updateContent)
     pass
 
