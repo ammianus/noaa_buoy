@@ -36,10 +36,16 @@ This will not tweet anything just print data.
 2. To run for social media posting on Twitter if you register your own Twitter app at developer.twitter.com
     1. Edit `twitter_creds.py` and put in your Twitter App
     2. Run the `twitter_client.py`:
+    
     Post a message
+    
     `python twitter_client.py post tweet -m "Hello World"`
+    
     Post the latest buoy data measurements
+    
     `python twitter_client.py post latest`
+    
     Post the most recent buoycam image
+    
     `python twitter_client.py post buoycam`
 
