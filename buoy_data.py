@@ -14,11 +14,23 @@ import matplotlib.pyplot as plt
 DEFAULT_BUOY = 44011
 
 def convertCToF(celsius: float) -> float:
-    farenheit = round(((celsius * 1.8) + 32.0),1)
+    if pd.isna(celsius):
+        farenheit = -1
+        pass
+    else:
+        farenheit = round(((celsius * 1.8) + 32.0),1)
+        pass
+    
     return farenheit
 
 def convertMetricSpeedToImperial(metersPerSecond: float) -> float:
-    milesPerHour = round((metersPerSecond * 3600) * 0.000621371)
+    if pd.isna(metersPerSecond):
+        milesPerHour = -1
+        pass
+    else:
+        milesPerHour = round((metersPerSecond * 3600) * 0.000621371)
+        pass
+    
     return milesPerHour 
 
 def friendlyFormatTemp(celsiusTemp: float) -> str:
@@ -294,13 +306,13 @@ else:
     pass
 
 #realtime data for station 44011
-buoydata = fetchRealTime2Data(buoyId)
-print(buoydata.describe())
+#buoydata = fetchRealTime2Data(buoyId)
+#print(buoydata.describe())
 
 #testing
 #airTempStatus(buoydata)
 #waterTempStatus(buoydata)
-windSpeedStatus(buoydata)
+#windSpeedStatus(buoydata)
 #measurementStatus(buoydata)
 
 #imagefile = fetchBuoyCamImage(buoyId)
